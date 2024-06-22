@@ -15,9 +15,13 @@ class StudentService {
         return StudentService.instace;
     }
 
-    public async getStudents(): Promise<Student[]> {
+    public async getStudents(page: number, size: number): Promise<Student[]> {
         try {
-            return studentRepo.getStudents();
+            return studentRepo.getStudents({
+                offset: page,
+                limit: size,
+                order: [["id", "ASC"]],
+            });
         } catch (err) {
             logger.error("Failed to execute StudentService -> getStudents");
             return [] as Student[];

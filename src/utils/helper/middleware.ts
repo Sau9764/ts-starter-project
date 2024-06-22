@@ -65,8 +65,6 @@ class Middleware {
                             .status(401)
                             .json({ message: "Unauthorized access" });
                     }
-
-                    next();
                 } catch (error) {
                     logger.error(
                         "failed to execute Middleware -> valiateUri -> auth"

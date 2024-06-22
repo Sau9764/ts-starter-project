@@ -1,5 +1,8 @@
+import { FindOptions } from "sequelize";
+
 import Student from "../models/student";
 import studentModel from "../models/student";
+import { IStudent } from "../types/student";
 
 class StudentRepo {
     private static instance: StudentRepo;
@@ -13,8 +16,8 @@ class StudentRepo {
         return StudentRepo.instance;
     }
 
-    public async getStudents(): Promise<Student[]> {
-        return studentModel.findAll();
+    public async getStudents(query: FindOptions<IStudent>): Promise<Student[]> {
+        return studentModel.findAll(query);
     }
 }
 

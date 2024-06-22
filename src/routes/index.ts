@@ -3,7 +3,7 @@ import { check } from "express-validator";
 
 import middleware from "../utils/helper/middleware";
 
-import StudentRouter from "./student";
+import StudentRouter from "./student/student";
 
 const TestingRoute = express.Router();
 

@@ -11,9 +11,12 @@ export const getStudents = async (
     try {
         logger.info("executing student controller -> getStudents");
 
-        const data = await studentService.getStudents();
+        const page = Number(request.query.page) || 1;
+        const size = Number(request.query.size) || 10;
 
-        return response.status(200).json(data);
+        const data = await studentService.getStudents(page, size);
+
+        response.status(200).json(data);
     } catch (error) {
         logger.error(error);
         logger.error("failed to execute controller -> getStudents");
