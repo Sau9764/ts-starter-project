@@ -2,6 +2,8 @@ import { NextFunction, Request, Response } from "express";
 
 import { logger } from "../utils/helper/logger";
 import studentService from "../service/student";
+import { IStudent } from "../types/student";
+import Student from "../models/student";
 
 export const getStudents = async (
     request: Request,
@@ -20,6 +22,30 @@ export const getStudents = async (
     } catch (error) {
         logger.error(error);
         logger.error("failed to execute controller -> getStudents");
+
+        next(error);
+    }
+};
+
+export const registerStudent = async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+) => {
+    try {
+        logger.info("executing student controller -> registerStudent");
+
+        let student: IStudent = {} as IStudent;
+
+        student.name = request.body.name;
+        student.email = request.body.email;
+
+        const data = await studentService.registerStudent(student);
+
+        response.status(201).json(data);
+    } catch (error) {
+        logger.error(error);
+        logger.error("failed to execute controller -> registerStudent");
 
         next(error);
     }

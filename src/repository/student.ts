@@ -1,4 +1,5 @@
-import { FindOptions } from "sequelize";
+import { FindOptions, Optional } from "sequelize";
+import { NullishPropertiesOf } from "sequelize/types/utils";
 
 import Student from "../models/student";
 import studentModel from "../models/student";
@@ -14,6 +15,12 @@ class StudentRepo {
         }
 
         return StudentRepo.instance;
+    }
+
+    public async create(
+        student: Optional<IStudent, NullishPropertiesOf<IStudent>>
+    ): Promise<Student> {
+        return studentModel.create(student);
     }
 
     public async getStudents(query: FindOptions<IStudent>): Promise<Student[]> {
