@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { IAuthorizedUserDetails } from "../../types/middleware";
+import { validationResult } from "express-validator";
 
+import { IAuthorizedUserDetails } from "../../types/middleware";
 import { logger } from "./logger";
 
 class Middleware {
@@ -38,21 +39,20 @@ class Middleware {
         response: Response,
         next: NextFunction
     ) {
+        const errors = validationResult(request);
+
+        if (!errors.isEmpty()) {
+            return response.status(400).json({ errors: errors.array() });
+        }
+
         try {
             logger.info("executing Middleware -> valiateUri");
 
             if (process.env.IS_AUTH === "true") {
                 logger.info("executing Middleware -> valiateUri -> Auth");
-
                 try {
                     const auth = request.header("Authorization");
-                    const token = auth?.split(" ")?.[1];
-
-                    if (!token) {
-                        return response
-                            .status(401)
-                            .json({ message: "Token is missing" });
-                    }
+                    const token = auth?.split(" ")[1] || ""; // Token is always present
 
                     if (!process.env.SECRET) {
                         throw new Error("JWT secret not added");

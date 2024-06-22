@@ -1,4 +1,6 @@
 import express, { Request, Response } from "express";
+import { check } from "express-validator";
+
 import middleware from "../utils/helper/middleware";
 
 import StudentRouter from "./student";
@@ -20,8 +22,18 @@ TestingRoute.get("/token", async (request: Request, response: Response) => {
     });
 });
 
+const checkToken = [
+    check("Authorization")
+        .exists()
+        .withMessage("Authorization token must be present")
+        .not()
+        .isEmpty()
+        .withMessage("Authorization token should not be empty"),
+];
+
 TestingRoute.post(
     "/verify",
+    checkToken,
     middleware.valiateUri,
     async (request: Request, response: Response) => {
         return response.send({
