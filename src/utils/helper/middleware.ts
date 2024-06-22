@@ -1,4 +1,7 @@
 import { NextFunction, Request, Response } from "express";
+import jwt from "jsonwebtoken";
+import { IAuthorizedUserDetails } from "../../types/middleware";
+
 import { logger } from "./logger";
 
 class Middleware {
@@ -14,6 +17,22 @@ class Middleware {
         return Middleware.instance;
     }
 
+    public async genrateToken(user: IAuthorizedUserDetails) {
+        try {
+            logger.info("executing Middleware -> genrateToken");
+
+            if (!process.env.SECRET) {
+                throw new Error("JWT secret not added");
+            }
+
+            const token = jwt.sign(user, process.env.SECRET, {
+                expiresIn: "15 minutes",
+            });
+
+            return token;
+        } catch (error) {}
+    }
+
     public async valiateUri(
         request: Request,
         response: Response,
@@ -21,6 +40,42 @@ class Middleware {
     ) {
         try {
             logger.info("executing Middleware -> valiateUri");
+
+            if (process.env.IS_AUTH === "true") {
+                logger.info("executing Middleware -> valiateUri -> Auth");
+
+                try {
+                    const auth = request.header("Authorization");
+                    const token = auth?.split(" ")?.[1];
+
+                    if (!token) {
+                        return response
+                            .status(401)
+                            .json({ message: "Token is missing" });
+                    }
+
+                    if (!process.env.SECRET) {
+                        throw new Error("JWT secret not added");
+                    }
+
+                    const payload = await jwt.verify(token, process.env.SECRET);
+
+                    if (!payload) {
+                        return response
+                            .status(401)
+                            .json({ message: "Unauthorized access" });
+                    }
+
+                    next();
+                } catch (error) {
+                    logger.error(
+                        "failed to execute Middleware -> valiateUri -> auth"
+                    );
+                    return response
+                        .status(401)
+                        .json({ message: "Unauthorized" });
+                }
+            }
 
             // Doing nothing here.
 
