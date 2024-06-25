@@ -4,7 +4,7 @@ import { createServer } from "http";
 
 import { logger } from "./utils/helper/logger";
 import middleware from "./utils/helper/middleware";
-import { StudentRouter, TestingRoute } from "./routes";
+import { StudentRouter, TestingRoute, UserRoute } from "./routes";
 
 config();
 
@@ -58,6 +58,7 @@ class Application {
 
             this.app.use(defaultParam, TestingRoute);
             this.app.use(defaultParam, StudentRouter);
+            this.app.use(defaultParam, UserRoute);
         } catch (error) {
             logger.error("failed to execute Application -> initRoute");
 

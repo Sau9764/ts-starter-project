@@ -1,6 +1,8 @@
 import express, { Request, Response } from "express";
 
 import StudentRouter from "./student";
+import UserRoute from "./user";
+import PostRoute from "./post";
 
 const TestingRoute = express.Router();
 
@@ -8,4 +10,4 @@ TestingRoute.get("/health", (req: Request, res: Response) => {
     return res.status(200).json({ message: "server health is fine." });
 });
 
-export { TestingRoute, StudentRouter };
+export { TestingRoute, StudentRouter, UserRoute, PostRoute };
